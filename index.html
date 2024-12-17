@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gimnasio - Iniciar Sesión</title>
+    <style>
+        /* Estilo general */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    height: 100vh;
+    background-image: url('https://w0.peakpx.com/wallpaper/344/593/HD-wallpaper-real-man-ultra-sports-fitness-dark-body-motivation-bodybuilding-muscle.jpg'); /* Ruta de la imagen de fondo */
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 16px;
+}
+
+/* Contenedor del formulario de inicio de sesión */
+.login-container {
+    background: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Logo */
+.login-logo {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+/* Título */
+.login-title {
+    font-size: 1.5rem;
+    margin: 20px 0;
+    color: #fff;
+}
+
+/* Estilo del formulario */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    text-align: left;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.form-input {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: #f4f4f4;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.form-input.error {
+    border-color: #e74c3c;
+}
+
+.error-message {
+    display: none;
+    color: #e74c3c;
+    font-size: 0.875rem;
+    margin-top: 5px;
+    text-align: left;
+}
+
+/* Botón de inicio de sesión */
+.login-btn {
+    background-color: #352f2f;
+    color: #fff;
+    padding: 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+    background-color: #191919;
+}
+
+/* Estilo para cuando hay un error en los campos */
+.form-input.error {
+    border: 1px solid #e74c3c;
+}
+
+.error-message {
+    display: block;
+}
+
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-logo">
+            GYM
+        </div>
+        <h1 class="login-title">Iniciar sesion</h1>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email" class="form-label">Usuario</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    class="form-input" 
+                    placeholder="usuario@ejemplo.com" 
+                    required
+                >
+                <div id="emailError" class="error-message">
+                    Por favor, ingresa un correo válido
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Contraseña</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    class="form-input" 
+                    placeholder="Contraseña" 
+                    required
+                >
+                <div id="passwordError" class="error-message">
+                    La contraseña es incorrecta
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">
+                INGRESAR
+            </button>
+
+        </form>
+    </div>
+
+    <script>
+        // Datos de ejemplo para simular un usuario registrado
+        localStorage.setItem('gym1@dev.com', '112100');
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+
+            // Resetear errores
+            emailInput.classList.remove('error');
+            passwordInput.classList.remove('error');
+            emailError.style.display = 'none';
+            passwordError.style.display = 'none';
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            // Validación de correo electrónico
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                emailInput.classList.add('error');
+                emailError.style.display = 'block';
+                return;
+            }
+
+            // Verificar si el usuario y contraseña coinciden
+            const storedPassword = localStorage.getItem(email);
+
+            if (storedPassword === password) {
+                alert('Inicio de sesión exitoso.');
+                window.location.href = 'AppGym.html';
+            } else {
+                passwordInput.classList.add('error');
+                passwordError.style.display = 'block';
+            }
+
+            // Limpiar campos
+            passwordInput.value = '';
+        });
+
+        // Manejadores de eventos para enlaces
+        document.getElementById('forgotPassword').addEventListener('click', function(event) {
+            event.preventDefault();
+            alert('Función de recuperación de contraseña próximamente.');
+        });
+
+        document.getElementById('register').addEventListener('click', function(event) {
+            event.preventDefault();
+            alert('Registro de nuevo usuario próximamente.');
+        });
+    </script>
+</body>
+</html>

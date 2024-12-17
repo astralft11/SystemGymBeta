@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gym System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.15/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    body {
+ margin: 0;
+ font-family: 'Arial', sans-serif;
+ display: flex;
+ background-color: #f4f6f9;
+ height: 100vh;
+ color: #333;
+}
+/* Sidebar */
+.sidebar {
+ width: 250px;
+ background-color: #2f2f3f;
+ color: #fff;
+ display: flex;
+ flex-direction: column;
+ padding: 20px;
+ box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+}
+.sidebar .logo {
+ font-size: 1.8em;
+ font-weight: bold;
+ margin-bottom: 30px;
+ text-align: center;
+ color: #ffdd57;
+}
+.sidebar ul {
+ list-style: none;
+ padding: 0;
+ margin: 0;
+ flex: 1;
+}
+.sidebar ul li {
+ margin: 20px 0;
+ padding: 10px;
+ cursor: pointer;
+ font-size: 1.1em;
+ transition: background 0.3s;
+ border-radius: 5px;
+}
+.sidebar ul li:hover, .sidebar ul li.active {
+ background: #4f4f6f;
+}
+.sidebar ul li i {
+ margin-right: 10px;
+}
+
+/* Main Content */
+.main-content {
+ flex: 1;
+ padding: 20px;
+ overflow-y: auto;
+}
+.section {
+ display: none;
+}
+.section.active {
+ display: block;
+}
+header h1 {
+ font-size: 2em;
+ margin-bottom: 20px;
+}
+
+/* Table */
+table {
+ width: 100%;
+ border-collapse: collapse;
+ margin-top: 20px;
+ background: #fff;
+ border-radius: 10px;
+ box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+th, td {
+ padding: 12px;
+ border: 1px solid #ddd;
+ text-align: center;
+}
+th {
+ background: #4f4f6f;
+ color: #fff;
+}
+img {
+ width: 50px;
+ border-radius: 50%;
+}
+
+/* Forms */
+form label {
+ display: block;
+ margin: 10px 0 5px;
+}
+form input, form select {
+ width: 100%;
+ padding: 8px;
+ margin-bottom: 15px;
+ border: 1px solid #ccc;
+ border-radius: 5px;
+}
+form button {
+ background-color: #4f4f6f;
+ color: #fff;
+ padding: 10px 20px;
+ border: none;
+ border-radius: 5px;
+ cursor: pointer;
+ font-size: 1em;
+ transition: background 0.3s;
+}
+form button:hover {
+ background-color: #2f2f3f;
+}
+
+.filters {
+ display: flex;
+ justify-content: space-between;
+ margin-bottom: 20px;
+}
+.filters label, .filters select {
+ margin-right: 10px;
+}
+#editModal {
+position: fixed;
+top: 0; left: 0; width: 100%; height: 100%;
+background: rgba(0, 0, 0, 0.5);
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.modal-content {
+background: white;
+padding: 20px;
+border-radius: 8px;
+width: 300px;
+}
+
+.modal-content form {
+display: flex;
+flex-direction: column;
+}
+
+.modal-content label {
+margin-top: 10px;
+}
+
+.modal-content button {
+margin-top: 15px;
+}
+
+.dashboard-metrics {
+display: flex;
+justify-content: space-between;
+margin-bottom: 20px;
+}
+.metric-card {
+background-color: #fff;
+border-radius: 8px;
+padding: 15px;
+text-align: center;
+box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+flex: 1;
+margin: 0 10px;
+}
+.metric-card h3 {
+margin-bottom: 10px;
+color: #4f4f6f;
+}
+.metric-card p {
+font-size: 24px;
+font-weight: bold;
+}
+.dashboard-charts {
+display: flex;
+justify-content: space-between;
+}
+.chart-container {
+width: 48%;
+background-color: #fff;
+border-radius: 8px;
+padding: 15px;
+box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.payment-history {
+ background-color: #fff;
+ border-radius: 8px;
+ padding: 15px;
+ margin-top: 20px;
+ box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.income-metrics {
+ display: flex;
+ justify-content: space-between;
+ margin-bottom: 20px;
+}
+.income-card {
+ background-color: #f4f6f9;
+ border-radius: 8px;
+ padding: 15px;
+ text-align: center;
+ flex: 1;
+ margin: 0 10px;
+}
+.export-buttons {
+ display: flex;
+ justify-content: flex-end;
+ margin-bottom: 15px;
+}
+.export-buttons button {
+ margin-left: 10px;
+}
+.plan-config {
+ background-color: #fff;
+ border-radius: 8px;
+ padding: 20px;
+ margin-bottom: 20px;
+ box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.plan-config-row {
+ display: flex;
+ align-items: center;
+ margin-bottom: 15px;
+}
+.plan-config-row input {
+ flex: 1;
+ margin-right: 10px;
+}
+
+/* Estilo del botón de salir */
+.logout-btn {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        cursor: pointer;
+        color: #fff;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+        border-radius: 4px;
+    }
+
+    .logout-btn:hover {
+        background-color: #e74c3c;
+    }
+
+    .logout-btn i {
+        margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">GymSystem</div>
+    <ul>
+      <li onclick="showSection('dashboard')" class="active"><i class="fas fa-chart-line"></i>Panel Principal</li>
+      <li onclick="showSection('users')"><i class="fas fa-users"></i>Usuarios</li>
+      <li onclick="showSection('register')"><i class="fas fa-user-plus"></i>Registro de Usuarios</li>
+      <li onclick="showSection('stats')"><i class="fas fa-chart-pie"></i>Estadísticas</li>
+      <li onclick="showSection('settings')"><i class="fas fa-cog"></i>Configuración</li>
+      <li onclick="logout()" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i>Salir
+    </li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+   <section id="dashboard" class="section active">
+    <header><h1>Panel Principal</h1></header>
+    <div class="dashboard-metrics">
+      <div class="metric-card">
+        <h3>Total de Usuarios</h3>
+        <p id="totalUsersMetric">0</p>
+      </div>
+      <div class="metric-card">
+        <h3>Usuarios Activos</h3>
+        <p id="activeUsersMetric">0</p>
+      </div>
+      <div class="metric-card">
+        <h3>Usuarios Inactivos</h3>
+        <p id="inactiveUsersMetric">0</p>
+      </div>
+      <div class="metric-card">
+        <h3>Ingresos Último Mes</h3>
+        <p id="monthlyIncomeMetric">$0</p>
+      </div>
+    </div>
+    
+    <div class="dashboard-charts">
+      <div class="chart-container">
+        <h2>Distribución de Planes</h2>
+        <canvas id="planDistributionChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <h2>Estado de Usuarios</h2>
+        <canvas id="userStatusChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+    <section id="users" class="section">
+     <header><h1>Usuarios</h1></header>
+     <div class="filters">
+       <label for="statusFilter">Estado:</label>
+       <select id="statusFilter" onchange="filterUsers()">
+         <option value="">Todos</option>
+         <option value="Activo">Activo</option>
+         <option value="Expirado">Expirado</option>
+       </select>
+       <label for="genderFilter">Género:</label>
+       <select id="genderFilter" onchange="filterUsers()">
+         <option value="">Todos</option>
+         <option value="Masculino">Masculino</option>
+         <option value="Femenino">Femenino</option>
+       </select>
+       <input type="text" id="search" placeholder="Buscar usuario..." onkeyup="searchUsers()">
+     </div>
+     <table id="userTable">
+       <thead>
+         <tr>
+           <th>ID</th>
+           <th>Nombre</th>
+           <th>Correo</th>
+           <th>Edad</th>
+           <th>Género</th>
+           <th>Teléfono</th>
+           <th>Tipo de Plan</th>
+           <th>Estado</th>
+           <th>Foto</th>
+           <th>Acciones</th>
+         </tr>
+       </thead>
+       <tbody></tbody>
+     </table>
+   </section>
+   
+
+    <section id="register" class="section">
+      <header><h1>Registro de Usuarios</h1></header>
+      <form id="registerForm">
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" required>
+        <label for="email">Correo:</label>
+        <input type="email" id="email" required>
+        <label for="age">Edad:</label>
+        <input type="number" id="age" required>
+        <label for="gender">Género:</label>
+        <select id="gender">
+          <option value="Masculino">Masculino</option>
+          <option value="Femenino">Femenino</option>
+        </select>
+        <label for="phone">Teléfono:</label>
+        <input type="text" id="phone" required>
+        <label for="plan">Tipo de Plan:</label>
+        <select id="plan">
+          <option value="Básico">Básico</option>
+          <option value="Intermedio">Intermedio</option>
+          <option value="Avanzado">Avanzado</option>
+        </select>
+        <label for="status">Estado:</label>
+        <select id="status">
+          <option value="Activo">Activo</option>
+          <option value="Expirado">Expirado</option>
+        </select>
+        <label for="photo">Foto:</label>
+        <input type="file" id="photo" accept="image/*" required>
+        <button type="button" onclick="registerUser()">Registrar</button>
+      </form>
+      <div id="registerMessage"></div>
+    </section>
+  </div>
+
+  <section id="stats" class="section">
+   <header><h1>Estadísticas del Gimnasio</h1></header>
+   
+   <div class="income-metrics">
+     <div class="income-card">
+       <h3>Ingresos Semanales</h3>
+       <p id="weeklyIncome">$0</p>
+     </div>
+     <div class="income-card">
+       <h3>Ingresos Mensuales</h3>
+       <p id="monthlyIncome">$0</p>
+     </div>
+     <div class="income-card">
+       <h3>Ingresos Anuales</h3>
+       <p id="annualIncome">$0</p>
+     </div>
+   </div>
+   
+   <div class="export-buttons">
+     <button onclick="exportToExcel()">Exportar a Excel</button>
+     <button onclick="exportToPDF()">Exportar a PDF</button>
+   </div>
+   
+   <div class="filters">
+     <input type="text" id="statsSearch" placeholder="Buscar usuario..." onkeyup="searchStats()">
+   </div>
+   
+   <table id="statsTable">
+     <thead>
+       <tr>
+         <th>ID</th>
+         <th>Nombre</th>
+         <th>Plan</th>
+         <th>Fecha de Ingreso</th>
+         <th>Historial de Pagos</th>
+         <th>Total Pagado</th>
+       </tr>
+     </thead>
+     <tbody id="statsTableBody"></tbody>
+   </table>
+ </section>
+</div>
+
+  <!-- New Settings Section -->
+  <section id="settings" class="section">
+   <header><h1>Configuración de Planes</h1></header>
+   <div class="plan-config">
+     <h2>Configuración de Planes</h2>
+     <div id="planConfigContainer">
+       <!-- Plan configuration rows will be dynamically added here -->
+     </div>
+     <div>
+       <label for="currencySelect">Moneda:</label>
+       <select id="currencySelect">
+<option value="USD">Dólar estadounidense (USD)</option>
+<option value="EUR">Euro (EUR)</option>
+<option value="GBP">Libra esterlina (GBP)</option>
+<option value="JPY">Yen japonés (JPY)</option>
+<option value="AUD">Dólar australiano (AUD)</option>
+<option value="CAD">Dólar canadiense (CAD)</option>
+<option value="CHF">Franco suizo (CHF)</option>
+<option value="CNY">Yuan chino (CNY)</option>
+<option value="INR">Rupia india (INR)</option>
+<option value="BRL">Real brasileño (BRL)</option>
+<option value="ARS">Peso argentino (ARS)</option>
+<option value="CLP">Peso chileno (CLP)</option>
+<option value="COP">Peso colombiano (COP)</option>
+<option value="MXN">Peso mexicano (MXN)</option>
+<option value="SEK">Corona sueca (SEK)</option>
+<option value="NOK">Corona noruega (NOK)</option>
+<option value="DKK">Corona danesa (DKK)</option>
+<option value="ZAR">Rand sudafricano (ZAR)</option>
+<option value="SGD">Dólar de Singapur (SGD)</option>
+<option value="HKD">Dólar de Hong Kong (HKD)</option>
+<option value="MYR">Ringgit malayo (MYR)</option>
+<option value="PHP">Peso filipino (PHP)</option>
+<option value="TRY">Lira turca (TRY)</option>
+<option value="SAR">Riyal saudí (SAR)</option>
+<option value="AED">Dirham de los Emiratos Árabes Unidos (AED)</option>
+<option value="KRW">Won surcoreano (KRW)</option>
+<option value="THB">Baht tailandés (THB)</option>
+<option value="VND">Dong vietnamita (VND)</option>
+
+       </select>
+     </div>
+     <button onclick="saveConfiguration()">Guardar Configuración</button>
+   </div>
+ </section>
+</div>
+<!-- Modal de Edición -->
+<div id="editModal" style="display: none;">
+ <div class="modal-content">
+   <h2>Editar Usuario</h2>
+   <form id="editForm">
+     <label for="editName">Nombre:</label>
+     <input type="text" id="editName" required>
+
+     <label for="editEmail">Correo:</label>
+     <input type="email" id="editEmail" required>
+
+     <label for="editAge">Edad:</label>
+     <input type="number" id="editAge" required>
+
+     <label for="editPlan">Plan:</label>
+     <input type="text" id="editPlan" required>
+
+     <label for="editPhone">Teléfono:</label>
+     <input type="text" id="editPhone" required>
+
+     <label for="editPhoto">Foto:</label>
+     <input type="file" id="editPhoto">
+
+     <button type="button" onclick="saveEditedUser()">Guardar Cambios</button>
+     <button type="button" onclick="closeModal()">Cancelar</button>
+   </form>
+ </div>
+</div>
+  <script>
+let userIdCounter = localStorage.getItem('userIdCounter') ? parseInt(localStorage.getItem('userIdCounter')) : 1;
+let users = localStorage.getItem('users') ? JSON.parse(localStorage.getItem('users')) : [];
+let editingUserId = null;
+
+// Función para convertir archivo a base64
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
+// Función para guardar usuarios en localStorage
+function saveUsersToLocalStorage() {
+  localStorage.setItem('users', JSON.stringify(users));
+  localStorage.setItem('userIdCounter', userIdCounter);
+}
+
+// Abrir el modal con datos del usuario
+function editUser(id) {
+  const user = users.find(u => u.id === id);
+  if (!user) return;
+
+  // Rellenar el formulario del modal con los datos actuales
+  document.getElementById("editName").value = user.name;
+  document.getElementById("editEmail").value = user.email;
+  document.getElementById("editAge").value = user.age;
+  document.getElementById("editPlan").value = user.plan;
+  document.getElementById("editPhone").value = user.phone;
+
+  // Guardar el ID del usuario en edición
+  editingUserId = id;
+
+  // Mostrar el modal
+  document.getElementById("editModal").style.display = "flex";
+}
+
+// Guardar cambios y actualizar el usuario
+async function saveEditedUser() {
+  const name = document.getElementById("editName").value;
+  const email = document.getElementById("editEmail").value;
+  const age = document.getElementById("editAge").value;
+  const plan = document.getElementById("editPlan").value;
+  const phone = document.getElementById("editPhone").value;
+  const photoInput = document.getElementById("editPhoto");
+
+  let photoBase64;
+
+  // Revisar si se seleccionó una nueva foto
+  if (photoInput.files.length > 0) {
+    try {
+      photoBase64 = await getBase64(photoInput.files[0]);
+    } catch (error) {
+      console.error("Error converting photo:", error);
+      return;
+    }
+  }
+
+  // Actualizar los datos del usuario
+  const user = users.find(u => u.id === editingUserId);
+  if (user) {
+    user.name = name;
+    user.email = email;
+    user.age = age;
+    user.plan = plan;
+    user.phone = phone;
+
+    if (photoBase64) {
+      user.photo = photoBase64; // Actualizar la foto si se selecciona una nueva
+    }
+  }
+
+  // Resetear la variable de edición y actualizar la tabla
+  editingUserId = null;
+  updateUserTable();
+  saveUsersToLocalStorage();
+
+  // Cerrar el modal
+  closeModal();
+}
+
+// Cerrar el modal
+function closeModal() {
+  document.getElementById("editModal").style.display = "none";
+}
+
+// Mostrar sección
+function showSection(sectionId) {
+  document.querySelectorAll('.section').forEach(section => {
+    section.classList.remove('active');
+  });
+  document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+  document.getElementById(sectionId).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Registrar o actualizar usuario
+async function registerUser() {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const age = document.getElementById("age").value;
+  const gender = document.getElementById("gender").value;
+  const phone = document.getElementById("phone").value;
+  const plan = document.getElementById("plan").value;
+  const status = document.getElementById("status").value;
+  const photoInput = document.getElementById("photo");
+
+  let photoBase64;
+
+  // Verificar si hay una foto nueva
+  if (photoInput.files.length > 0) {
+    try {
+      photoBase64 = await getBase64(photoInput.files[0]);
+    } catch (error) {
+      console.error("Error converting photo:", error);
+      alert("Error al procesar la foto.");
+      return;
+    }
+  }
+
+  if (editingUserId !== null) {
+    // Actualizar usuario existente
+    const user = users.find(u => u.id === editingUserId);
+    user.name = name;
+    user.email = email;
+    user.age = age;
+    user.gender = gender;
+    user.phone = phone;
+    user.plan = plan;
+    user.status = status;
+
+    if (photoBase64) {
+      user.photo = photoBase64; // Actualizar foto si se sube una nueva
+    }
+
+    editingUserId = null; // Resetear modo edición
+  } else {
+    // Registrar nuevo usuario
+    if (!photoBase64) {
+      alert("Por favor, sube una foto.");
+      return;
+    }
+
+    const user = {
+      id: userIdCounter++,
+      name,
+      email,
+      age,
+      gender,
+      phone,
+      plan,
+      status,
+      photo: photoBase64
+    };
+
+    users.push(user);
+  }
+
+  updateUserTable();
+  saveUsersToLocalStorage();
+  document.getElementById("registerForm").reset();
+  document.getElementById("registerMessage").innerText = "¡Usuario guardado correctamente!";
+  setTimeout(() => document.getElementById("registerMessage").innerText = "", 3000);
+}
+
+// Actualizar la tabla
+function updateUserTable(filteredUsers = users) {
+  const tableBody = document.querySelector("#userTable tbody");
+  tableBody.innerHTML = ""; // Limpiar tabla
+  filteredUsers.forEach(user => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${user.id}</td>
+      <td>${user.name}</td>
+      <td>${user.email}</td>
+      <td>${user.age}</td>
+      <td>${user.gender}</td>
+      <td>${user.phone}</td>
+      <td>${user.plan}</td>
+      <td>${user.status}</td>
+      <td><img src="${user.photo}" alt="Foto" style="width: 50px; height: 50px;"></td>
+      <td>
+        <button onclick="editUser(${user.id})">✏️</button>
+        <button onclick="deleteUser(${user.id})">🗑️</button>
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
+
+// Eliminar usuario
+function deleteUser(id) {
+  users = users.filter(user => user.id !== id);
+  updateUserTable();
+  saveUsersToLocalStorage();
+}
+
+// Buscar usuarios
+function searchUsers() {
+  const query = document.getElementById("search").value.toLowerCase();
+  const filteredUsers = users.filter(user =>
+    user.name.toLowerCase().includes(query) ||
+    user.email.toLowerCase().includes(query)
+  );
+  updateUserTable(filteredUsers);
+}
+
+// Filtrar usuarios
+function filterUsers() {
+  const statusFilter = document.getElementById("statusFilter").value;
+  const genderFilter = document.getElementById("genderFilter").value;
+
+  const filteredUsers = users.filter(user => {
+    return (statusFilter === "" || user.status === statusFilter) &&
+           (genderFilter === "" || user.gender === genderFilter);
+  });
+
+  updateUserTable(filteredUsers);
+}
+
+// Cargar usuarios al iniciar
+document.addEventListener('DOMContentLoaded', () => {
+  updateUserTable();
+});
+
+
+
+let plansConfig = localStorage.getItem('plansConfig') ? 
+      JSON.parse(localStorage.getItem('plansConfig')) : 
+      [
+        { id: 'Básico', name: 'Básico', price: 50 },
+        { id: 'Intermedio', name: 'Intermedio', price: 75 },
+        { id: 'Avanzado', name: 'Avanzado', price: 100 }
+      ];
+
+    let selectedCurrency = localStorage.getItem('selectedCurrency') || '$';
+
+    // Function to initialize plan configuration
+    function initializePlanConfiguration() {
+      const container = document.getElementById('planConfigContainer');
+      container.innerHTML = ''; // Clear existing content
+
+      plansConfig.forEach(plan => {
+        const row = document.createElement('div');
+        row.className = 'plan-config-row';
+        row.innerHTML = `
+          <input type="text" class="plan-name" value="${plan.name}" data-id="${plan.id}" placeholder="Nombre del Plan">
+          <input type="number" class="plan-price" value="${plan.price}" placeholder="Precio">
+        `;
+        container.appendChild(row);
+      });
+
+      // Set currency dropdown
+      document.getElementById('currencySelect').value = selectedCurrency;
+    }
+
+    // Function to save configuration
+    function saveConfiguration() {
+      const nameInputs = document.querySelectorAll('.plan-name');
+      const priceInputs = document.querySelectorAll('.plan-price');
+      
+      // Update plansConfig
+      plansConfig = Array.from(nameInputs).map((nameInput, index) => ({
+        id: nameInput.getAttribute('data-id'),
+        name: nameInput.value,
+        price: parseFloat(priceInputs[index].value)
+      }));
+
+      // Save to localStorage
+      localStorage.setItem('plansConfig', JSON.stringify(plansConfig));
+
+      // Save selected currency
+      selectedCurrency = document.getElementById('currencySelect').value;
+      localStorage.setItem('selectedCurrency', selectedCurrency);
+
+      // Update plan selection in registration form
+      updatePlanSelectionInRegistration();
+
+      alert('Configuración guardada correctamente');
+    }
+
+    // Function to update plan selection in registration form
+    function updatePlanSelectionInRegistration() {
+      const planSelect = document.getElementById('plan');
+      planSelect.innerHTML = ''; // Clear existing options
+
+      plansConfig.forEach(plan => {
+        const option = document.createElement('option');
+        option.value = plan.id;
+        option.textContent = `${plan.name} (${selectedCurrency}${plan.price})`;
+        planSelect.appendChild(option);
+      });
+    }
+
+    // Modify existing event listeners or add new ones
+    document.addEventListener('DOMContentLoaded', () => {
+      updateUserTable();
+      initializePlanConfiguration();
+      updatePlanSelectionInRegistration();
+    });
+
+    // Update registration form plans when switching to registration section
+    function showSection(sectionId) {
+      // Existing showSection logic
+      document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+      event.target.classList.add('active');
+
+      // If switching to registration, update plans
+      if (sectionId === 'register') {
+        updatePlanSelectionInRegistration();
+      }
+    }
+
+// Añadir una función para verificar y actualizar el estado de los usuarios
+function checkAndUpdateUserMemberships() {
+  const today = new Date();
+  let membershipsUpdated = false;
+
+  users = users.map(user => {
+    // Añadir una fecha de inicio de membresía si no existe
+    if (!user.membershipStartDate) {
+      user.membershipStartDate = new Date().toISOString();
+    }
+
+    const membershipStart = new Date(user.membershipStartDate);
+    const monthsSinceStart = Math.floor((today - membershipStart) / (1000 * 60 * 60 * 24 * 30));
+
+    // Verificar si el usuario ha pasado su período de membresía
+    if (monthsSinceStart >= 1 && user.status === 'Activo') {
+      user.status = 'Expirado';
+      membershipsUpdated = true;
+    }
+
+    return user;
+  });
+
+  // Si hay cambios, actualizar la tabla y el almacenamiento local
+  if (membershipsUpdated) {
+    updateUserTable();
+    saveUsersToLocalStorage();
+    updateDashboardMetrics(); // Actualizar métricas del dashboard
+  }
+}
+
+// Modificar la función de registro de usuario para incluir la fecha de inicio de membresía
+async function registerUser() {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const age = document.getElementById("age").value;
+  const gender = document.getElementById("gender").value;
+  const phone = document.getElementById("phone").value;
+  const plan = document.getElementById("plan").value;
+  const status = document.getElementById("status").value;
+  const photoInput = document.getElementById("photo");
+
+  let photoBase64;
+
+  // Verificar si hay una foto nueva
+  if (photoInput.files.length > 0) {
+    try {
+      photoBase64 = await getBase64(photoInput.files[0]);
+    } catch (error) {
+      console.error("Error converting photo:", error);
+      alert("Error al procesar la foto.");
+      return;
+    }
+  }
+
+  if (editingUserId !== null) {
+    // Actualizar usuario existente
+    const user = users.find(u => u.id === editingUserId);
+    user.name = name;
+    user.email = email;
+    user.age = age;
+    user.gender = gender;
+    user.phone = phone;
+    user.plan = plan;
+    user.status = status;
+
+    if (photoBase64) {
+      user.photo = photoBase64; // Actualizar foto si se sube una nueva
+    }
+
+    editingUserId = null; // Resetear modo edición
+  } else {
+    // Registrar nuevo usuario
+    if (!photoBase64) {
+      alert("Por favor, sube una foto.");
+      return;
+    }
+
+    const user = {
+      id: userIdCounter++,
+      name,
+      email,
+      age,
+      gender,
+      phone,
+      plan,
+      status,
+      photo: photoBase64,
+      membershipStartDate: new Date().toISOString() // Añadir fecha de inicio de membresía
+    };
+
+    users.push(user);
+  }
+
+  updateUserTable();
+  saveUsersToLocalStorage();
+  document.getElementById("registerForm").reset();
+  document.getElementById("registerMessage").innerText = "¡Usuario guardado correctamente!";
+  setTimeout(() => document.getElementById("registerMessage").innerText = "", 3000);
+
+  // Actualizar métricas del dashboard
+  updateDashboardMetrics();
+}
+
+// Función para actualizar métricas del dashboard
+function updateDashboardMetrics() {
+  const totalUsers = users.length;
+  const activeUsers = users.filter(user => user.status === 'Activo').length;
+  const inactiveUsers = users.filter(user => user.status === 'Expirado').length;
+
+  document.getElementById('totalUsersMetric').textContent = totalUsers;
+  document.getElementById('activeUsersMetric').textContent = activeUsers;
+  document.getElementById('inactiveUsersMetric').textContent = inactiveUsers;
+
+  // Actualizar gráficos si están definidos
+  updateUserStatusChart();
+  updatePlanDistributionChart();
+}
+
+// Función para crear o actualizar el gráfico de estado de usuarios
+function updateUserStatusChart() {
+  const activeUsers = users.filter(user => user.status === 'Activo').length;
+  const inactiveUsers = users.filter(user => user.status === 'Expirado').length;
+
+  const ctx = document.getElementById('userStatusChart').getContext('2d');
+  
+  // Destruir el gráfico existente si hay uno
+  if (window.userStatusChartInstance) {
+    window.userStatusChartInstance.destroy();
+  }
+
+  window.userStatusChartInstance = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Activos', 'Inactivos'],
+      datasets: [{
+        data: [activeUsers, inactiveUsers],
+        backgroundColor: ['#36A2EB', '#FF6384']
+      }]
+    },
+    options: {
+      responsive: true,
+      title: {
+        display: true,
+        text: 'Estado de Usuarios'
+      }
+    }
+  });
+}
+
+// Función para crear o actualizar el gráfico de distribución de planes
+function updatePlanDistributionChart() {
+  const planCounts = users.reduce((acc, user) => {
+    acc[user.plan] = (acc[user.plan] || 0) + 1;
+    return acc;
+  }, {});
+
+  const ctx = document.getElementById('planDistributionChart').getContext('2d');
+  
+  // Destruir el gráfico existente si hay uno
+  if (window.planDistributionChartInstance) {
+    window.planDistributionChartInstance.destroy();
+  }
+
+  window.planDistributionChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(planCounts),
+      datasets: [{
+        label: 'Número de Usuarios por Plan',
+        data: Object.values(planCounts),
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Número de Usuarios'
+          }
+        }
+      }
+    }
+  });
+}
+
+// Añadir un evento para verificar membresías cuando se carga la página
+document.addEventListener('DOMContentLoaded', () => {
+  updateUserTable();
+  updateDashboardMetrics();
+  checkAndUpdateUserMemberships();
+
+  // Verificar membresías cada hora
+  setInterval(checkAndUpdateUserMemberships, 3600000); // 3600000 ms = 1 hora
+});
+
+
+// Función para reactivar la membresía de un usuario
+function reactivateUser(userId, paymentAmount) {
+  const user = users.find(u => u.id === userId);
+  if (!user) return false;
+
+  // Encontrar el plan del usuario
+  const userPlan = plansConfig.find(plan => plan.id === user.plan);
+  if (!userPlan) return false;
+
+  // Verificar si el pago cubre el precio del plan
+  if (paymentAmount < userPlan.price) {
+    alert('El pago no cubre el precio completo del plan.');
+    return false;
+  }
+
+  // Calcular días restantes desde la última expiración
+  const today = new Date();
+  const lastMembershipEnd = new Date(user.membershipEndDate || user.membershipStartDate);
+  const daysSinceExpiration = Math.max(0, Math.floor((today - lastMembershipEnd) / (1000 * 60 * 60 * 24)));
+
+  // Calcular nueva fecha de inicio de membresía
+  // Si había días restantes, se añaden a la nueva membresía
+  const newMembershipStart = new Date();
+  const membershipLengthDays = 30 + daysSinceExpiration;
+
+  // Actualizar datos del usuario
+  user.status = 'Activo';
+  user.membershipStartDate = newMembershipStart.toISOString();
+  user.membershipEndDate = new Date(newMembershipStart.getTime() + membershipLengthDays * 24 * 60 * 60 * 1000).toISOString();
+
+  // Actualizar tabla, almacenamiento y métricas
+  updateUserTable();
+  saveUsersToLocalStorage();
+  updateDashboardMetrics();
+
+  // Mensaje de confirmación
+  alert(`Membresía reactivada. Nueva fecha de expiración: ${new Date(user.membershipEndDate).toLocaleDateString()}`);
+
+  return true;
+}
+
+// Modificar la función de verificación de membresías para usar membershipEndDate
+function checkAndUpdateUserMemberships() {
+  const today = new Date();
+  let membershipsUpdated = false;
+
+  users = users.map(user => {
+    // Si no hay fecha de fin de membresía, establecer una por defecto
+    if (!user.membershipEndDate) {
+      const membershipStart = new Date(user.membershipStartDate || today);
+      user.membershipEndDate = new Date(membershipStart.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    }
+
+    const membershipEnd = new Date(user.membershipEndDate);
+
+    // Verificar si la membresía ha expirado
+    if (today > membershipEnd && user.status === 'Activo') {
+      user.status = 'Expirado';
+      membershipsUpdated = true;
+    }
+
+    return user;
+  });
+
+  // Si hay cambios, actualizar la tabla y el almacenamiento local
+  if (membershipsUpdated) {
+    updateUserTable();
+    saveUsersToLocalStorage();
+    updateDashboardMetrics();
+  }
+}
+
+// Modificar el registro de usuario para establecer membershipEndDate
+async function registerUser() {
+  // ... código anterior ...
+
+  const user = {
+    id: userIdCounter++,
+    name,
+    email,
+    age,
+    gender,
+    phone,
+    plan,
+    status,
+    photo: photoBase64,
+    membershipStartDate: new Date().toISOString(),
+    membershipEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 días desde hoy
+  };
+
+  // ... resto del código anterior ...
+}
+
+// Ejemplo de cómo podría usarse la reactivación (puedes agregar un botón o modal)
+function showReactivationModal(userId) {
+  const paymentAmount = prompt('Ingrese el monto del pago:');
+  if (paymentAmount) {
+    reactivateUser(userId, parseFloat(paymentAmount));
+  }
+}
+
+// Añadir un método para verificar días restantes
+function getRemainingMembershipDays(user) {
+  const today = new Date();
+  const membershipEnd = new Date(user.membershipEndDate);
+  const remainingDays = Math.floor((membershipEnd - today) / (1000 * 60 * 60 * 24));
+  return remainingDays;
+}
+
+function updateUserTable(filteredUsers = users) {
+  const tableBody = document.querySelector("#userTable tbody");
+  tableBody.innerHTML = ""; // Limpiar tabla
+  filteredUsers.forEach(user => {
+    const remainingDays = getRemainingMembershipDays(user);
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${user.id}</td>
+      <td>${user.name}</td>
+      <td>${user.email}</td>
+      <td>${user.age}</td>
+      <td>${user.gender}</td>
+      <td>${user.phone}</td>
+      <td>${user.plan}</td>
+      <td>
+        ${user.status} 
+        ${remainingDays > 0 ? `(${remainingDays} días restantes)` : ''}
+        ${remainingDays <= 5 && user.status === 'Activo' ? '<span style="color:orange; font-weight:bold;">Próximo a expirar</span>' : ''}
+        ${remainingDays <= 0 && user.status === 'Activo' ? '<span style="color:red; font-weight:bold;">Expirando hoy</span>' : ''}
+      </td>
+      <td><img src="${user.photo}" alt="Foto" style="width: 50px; height: 50px;"></td>
+      <td>
+        <button onclick="editUser(${user.id})">Editar</button>
+        <button onclick="deleteUser(${user.id})">Eliminar</button>
+        ${user.status === 'Expirado' ? `<button onclick="showReactivationModal(${user.id})">Reactivar</button>` : ''}
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
+
+// Modificar la tabla de usuarios para mostrar días restantes
+function updateUserTable(filteredUsers = users) {
+  const tableBody = document.querySelector("#userTable tbody");
+  tableBody.innerHTML = ""; // Limpiar tabla
+  filteredUsers.forEach(user => {
+    const remainingDays = getRemainingMembershipDays(user);
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${user.id}</td>
+      <td>${user.name}</td>
+      <td>${user.email}</td>
+      <td>${user.age}</td>
+      <td>${user.gender}</td>
+      <td>${user.phone}</td>
+      <td>${user.plan}</td>
+      <td>${user.status} ${user.status === 'Expirado' ? `(${remainingDays} días)` : ''}</td>
+      <td><img src="${user.photo}" alt="Foto" style="width: 50px; height: 50px;"></td>
+      <td>
+        <button onclick="editUser(${user.id})">Editar</button>
+        <button onclick="deleteUser(${user.id})">Eliminar</button>
+        ${user.status === 'Expirado' ? `<button onclick="showReactivationModal(${user.id})">Reactivar</button>` : ''}
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
+
+// Function to generate payment history for a user
+function generatePaymentHistory(user) {
+  const plans = plansConfig;
+  const userPlan = plans.find(p => p.id === user.plan);
+  
+  const paymentHistory = [
+    {
+      date: new Date(user.membershipStartDate).toLocaleDateString(),
+      amount: userPlan ? userPlan.price : 0,
+      plan: user.plan
+    }
+  ];
+
+  // If the user has been reactivated, add reactivation payments
+  if (user.reactivationHistory) {
+    user.reactivationHistory.forEach(reactivation => {
+      paymentHistory.push({
+        date: new Date(reactivation.date).toLocaleDateString(),
+        amount: reactivation.amount,
+        plan: user.plan
+      });
+    });
+  }
+
+  return paymentHistory;
+}
+
+// Function to calculate total paid by a user
+function calculateTotalPaid(user) {
+  const plans = plansConfig;
+  const userPlan = plans.find(p => p.id === user.plan);
+  
+  let totalPaid = userPlan ? userPlan.price : 0;
+
+  // Add reactivation payments if exist
+  if (user.reactivationHistory) {
+    const reactivationTotal = user.reactivationHistory.reduce((sum, payment) => sum + payment.amount, 0);
+    totalPaid += reactivationTotal;
+  }
+
+  return totalPaid;
+}
+
+// Function to update stats table
+function updateStatsTable() {
+  const statsTableBody = document.getElementById('statsTableBody');
+  statsTableBody.innerHTML = ''; // Clear existing rows
+
+  users.forEach(user => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${user.id}</td>
+      <td>${user.name}</td>
+      <td>${user.plan}</td>
+      <td>${new Date(user.membershipStartDate).toLocaleDateString()}</td>
+      <td>${generatePaymentHistory(user).map(payment => 
+        `${payment.date}: $${payment.amount}`
+      ).join('<br>')}</td>
+      <td>$${calculateTotalPaid(user)}</td>
+    `;
+    statsTableBody.appendChild(row);
+  });
+
+  // Calculate and update gym income
+  calculateGymIncome();
+}
+
+// Function to calculate gym income
+function calculateGymIncome() {
+  const today = new Date();
+  const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const oneMonthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const oneYearAgo = new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000);
+
+  let weeklyIncome = 0;
+  let monthlyIncome = 0;
+  let annualIncome = 0;
+
+  users.forEach(user => {
+    const plans = plansConfig;
+    const userPlan = plans.find(p => p.id === user.plan);
+    const membershipStart = new Date(user.membershipStartDate);
+
+    // Initial membership payment
+    if (membershipStart >= oneYearAgo) {
+      const planPrice = userPlan ? userPlan.price : 0;
+      
+      // Add initial membership payment
+      annualIncome += planPrice;
+      if (membershipStart >= oneMonthAgo) monthlyIncome += planPrice;
+      if (membershipStart >= oneWeekAgo) weeklyIncome += planPrice;
+
+      // Add reactivation payments
+      if (user.reactivationHistory) {
+        user.reactivationHistory.forEach(reactivation => {
+          const paymentDate = new Date(reactivation.date);
+          if (paymentDate >= oneYearAgo) {
+            annualIncome += reactivation.amount;
+            if (paymentDate >= oneMonthAgo) monthlyIncome += reactivation.amount;
+            if (paymentDate >= oneWeekAgo) weeklyIncome += reactivation.amount;
+          }
+        });
+      }
+    }
+  });
+
+  // Update income metrics
+  document.getElementById('weeklyIncome').textContent = `$${weeklyIncome.toFixed(2)}`;
+  document.getElementById('monthlyIncome').textContent = `$${monthlyIncome.toFixed(2)}`;
+  document.getElementById('annualIncome').textContent = `$${annualIncome.toFixed(2)}`;
+}
+
+// Function to export stats to Excel
+function exportToExcel() {
+  // Create worksheet data
+  const statsData = users.map(user => ({
+    'ID': user.id,
+    'Nombre': user.name,
+    'Plan': user.plan,
+    'Fecha de Ingreso': new Date(user.membershipStartDate).toLocaleDateString(),
+    'Historial de Pagos': generatePaymentHistory(user).map(p => `${p.date}: $${p.amount}`).join('; '),
+    'Total Pagado': `$${calculateTotalPaid(user)}`
+  }));
+
+  // Create worksheet and workbook
+  const worksheet = XLSX.utils.json_to_sheet(statsData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Estadísticas de Usuarios");
+
+  // Export workbook
+  XLSX.writeFile(workbook, "estadisticas_gimnasio.xlsx");
+}
+
+// Function to export stats to PDF
+function exportToPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  // Add title
+  doc.setFontSize(18);
+  doc.text("Estadísticas del Gimnasio", 14, 22);
+
+  // Add Income Summary
+  doc.setFontSize(12);
+  doc.text(`Ingresos Semanales: $${document.getElementById('weeklyIncome').textContent}`, 14, 32);
+  doc.text(`Ingresos Mensuales: $${document.getElementById('monthlyIncome').textContent}`, 14, 39);
+  doc.text(`Ingresos Anuales: $${document.getElementById('annualIncome').textContent}`, 14, 46);
+
+  // Create table of user stats
+  const statsData = users.map(user => [
+    user.id.toString(),
+    user.name,
+    user.plan,
+    new Date(user.membershipStartDate).toLocaleDateString(),
+    generatePaymentHistory(user).map(p => `${p.date}: $${p.amount}`).join('\n'),
+    `$${calculateTotalPaid(user)}`
+  ]);
+
+  doc.autoTable({
+    startY: 55,
+    head: [['ID', 'Nombre', 'Plan', 'Fecha de Ingreso', 'Historial de Pagos', 'Total Pagado']],
+    body: statsData
+  });
+
+  // Save PDF
+  doc.save("estadisticas_gimnasio.pdf");
+}
+
+// Function to search stats
+function searchStats() {
+  const query = document.getElementById("statsSearch").value.toLowerCase();
+  const statsTableBody = document.getElementById('statsTableBody');
+  statsTableBody.innerHTML = ''; // Clear existing rows
+
+  const filteredUsers = users.filter(user => 
+    user.name.toLowerCase().includes(query) ||
+    user.id.toString().includes(query) ||
+    user.plan.toLowerCase().includes(query)
+  );
+
+  filteredUsers.forEach(user => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${user.id}</td>
+      <td>${user.name}</td>
+      <td>${user.plan}</td>
+      <td>${new Date(user.membershipStartDate).toLocaleDateString()}</td>
+      <td>${generatePaymentHistory(user).map(payment => 
+        `${payment.date}: $${payment.amount}`
+      ).join('<br>')}</td>
+      <td>$${calculateTotalPaid(user)}</td>
+    `;
+    statsTableBody.appendChild(row);
+  });
+}
+
+// Add event listeners when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  updateStatsTable();
+
+  // Add event listener for search in stats
+  document.getElementById('statsSearch').addEventListener('keyup', searchStats);
+});
+
+function logout() {
+        // Aquí puedes agregar la lógica para cerrar sesión
+        // Por ejemplo, limpiar los datos de sesión o redirigir a la página de login
+        alert("Has cerrado sesión correctamente.");
+        window.location.href = 'index.html'; // Redirige a la página de inicio de sesión
+    }
+ </script>
+</body>
+</html>
